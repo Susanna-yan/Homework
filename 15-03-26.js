@@ -1,11 +1,11 @@
 /*-------Curry---------
 function curry(cb){
-    let Args = [];
+    let arg = [];
     return function cruied(...args){
-        Args.push(...args);
-        if(Args.length >= cb.length){
-            let res = cb(...Args);
-            Args.length = 0;
+        arg.push(...args);
+        if(args.length >= cb.length){
+            let res = cb(...arg);
+            arg.length = 0;
             return res;
         }
          return cruied;
