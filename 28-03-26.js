@@ -1,3 +1,4 @@
+// ------------- Class -------------
 class Book{
 constructor(title,author,year){
         this.title = title;
@@ -9,25 +10,21 @@ constructor(title,author,year){
         return `Title: ${this.title}, Author: ${this.author}, Year: ${this.year}`;
     }
     borrowBook(){
-        if(this.isAvailable === true){
-            return this.isAvailable = false;
-        } else{
-            return "Unavailable";
-        }
+      if(!this.isAvailable){
+        return "Unavailable";
+    }
+      this.isAvailable = false;
+       return "Book borrowed";
     }
     returnBook(){
          if(this.isAvailable === false){
             return this.isAvailable = true;
         } else{
-            return "Book is avilable";
+           return "Book is available";
         }
     }
     matchesAuthor(authorName){
-        if(this.author.toLowerCase() === authorName.toLowerCase()){
-            return true;
-        } else {
-            return false;
-        }
+       return this.author.toLowerCase() === authorName.toLowerCase();
     }
     matchesTitle(word){
         if(this.title.includes(word)){
@@ -55,7 +52,7 @@ class Library{
       return this.books.find(book => book.title === title) || null;
     }
     findBooksByAuthor(authorName){
-        return this.books.filter(b => b.author === authorName) || null;
+      return this.books.filter(b => b.author === authorName);
     }
     getAvailableBooks(){
        /* let res = [];
@@ -78,8 +75,7 @@ class Library{
        return book.returnBook();
     }
     showAllBooks(){
-        if(this.books.length == 0) return "No books in library";
-        return this.books.map(b => b.getInfo());
+       return this.books;
     }
     countBooks(){
         return this.books.length;
@@ -100,10 +96,107 @@ class Library{
        );
     }
     getOldestBook(){
-        return this.books.reduce((old,book) => 
-        book.year < old.year ? book : old, this.books[0]) || null;
+      if(this.books.length === 0) return null;
+
+        return this.books.reduce((old, book) =>
+        book.year < old.year ? book : old
+          );
     }
 }
+
+
+
+// ------------ Constructor Function ----------
+function Book(title, author, year){
+    this.title = title;
+    this.author = author;
+    this.year = year;
+    this.isAvailable = true;
+}
+
+Book.prototype.getInfo = function(){
+    return `Title: ${this.title}, Author: ${this.author}, Year: ${this.year}`;
+};
+
+Book.prototype.borrowBook = function(){
+    if(!this.isAvailable) return "Unavailable";
+    this.isAvailable = false;
+    return "Book borrowed";
+};
+
+Book.prototype.returnBook = function(){
+    if(this.isAvailable) return "Book is available";
+    this.isAvailable = true;
+    return "Book returned";
+};
+
+Book.prototype.matchesAuthor = function(authorName) {
+    return this.author.toLowerCase() === authorName.toLowerCase();
+};
+
+Book.prototype.matchesTitle = function(word) {
+    return this.title.toLowerCase().includes(word.toLowerCase());
+};
+
+
+function Library(){
+    this.books = [];
+}
+
+Library.prototype.addBook = function(book){
+    if(!book) return "Empty";
+    this.books.push(book);
+};
+
+Library.prototype.findBookByTitle = function(title){
+    return this.books.find(b => b.title === title) || null;
+};
+
+Library.prototype.findBooksByAuthor = function(authorName){
+    return this.books.filter(b => b.author === authorName);
+};
+
+Library.prototype.getAvailableBooks = function(){
+    return this.books.filter(b => b.isAvailable);
+};
+
+Library.prototype.borrowBook = function(title){
+    const book = this.findBookByTitle(title);
+    if(!book) return "Not found";
+    return book.borrowBook();
+};
+
+Library.prototype.returnBook = function(title){
+    const book = this.findBookByTitle(title);
+    if(!book) return "Not found";
+    return book.returnBook();
+};
+
+Library.prototype.showAllBooks = function(){
+    return this.books;
+};
+
+Library.prototype.countBooks = function(){
+    return this.books.length;
+};
+
+Library.prototype.countAvailableBooks = function(){
+    return this.books.filter(b => b.isAvailable).length;
+};
+
+Library.prototype.searchBook = function(word){
+    return this.books.filter(b =>
+        b.title.toLowerCase().includes(word.toLowerCase())
+    );
+};
+
+Library.prototype.getOldestBook = function(){
+    if(this.books.length === 0) return null;
+
+    return this.books.reduce((old, book) =>
+        book.year < old.year ? book : old
+    );
+};
 
 const book1 = new Book("Harry Potter", "J. K. Rowling", 1997);
 const book2 = new Book("1984", "George Orwell", 1949);
@@ -124,10 +217,10 @@ console.log("=== All books ===");
 console.log(library.showAllBooks());
 
 console.log("=== Count books ===");
-console.log(library.countBooks()); // 4
+console.log(library.countBooks());
 
 console.log("=== Count available books ===");
-console.log(library.countAvailableBooks()); // 4
+console.log(library.countAvailableBooks());
 
 console.log("=== Find by title ===");
 console.log(library.findBookByTitle("1984"));
