@@ -1,34 +1,38 @@
-class Book{
+class Book {
     #title;
     #author;
     #year;
     #isAvailable;
-    constructor(title,author,year){
+
+    constructor(title, author, year){
         this.title = title;
         this.author = author;
         this.year = year;
-        this.#isAvailable = true; 
+        this.#isAvailable = true;
     }
+
     get title(){
         return this.#title;
     }
     set title(val){
         if(val === ""){
-            console.log("Is empty");
+            console.log("Title is empty");
             return;
         }
-         this.#title = val;
+        this.#title = val;
     }
+
     get author(){
         return this.#author;
     }
     set author(val){
         if(val === ""){
-            console.log("Is empty");
+            console.log("Author is empty");
             return;
         }
-         this.#author = val;
+        this.#author = val;
     }
+
     get year(){
         return this.#year;
     }
@@ -37,154 +41,177 @@ class Book{
             console.log("Invalid year");
             return;
         }
-         this.#year = n;
+        this.#year = n;
     }
+
     get isAvailable(){
         return this.#isAvailable;
     }
+
     borrowBook(){
         if(!this.#isAvailable){
-            console.log("Unavailable");
-            return;
+            return "Unavailable";
         }
-         this.#isAvailable = false;
+        this.#isAvailable = false;
     }
+
     returnBook(){
         if(this.#isAvailable){
-            console.log("Is available");
-            return;
+            return "Book is available";
         }
-         this.#isAvailable = true;
+        this.#isAvailable = true;
     }
+
     matchesTitle(word){
-       if(this.#title.includes(word)){
-           return true;
-       } else {
-           return false;
-       }
+        return this.#title.includes(word);
     }
+
+    matchesAuthor(authorName){
+        return this.#author.toLowerCase() === authorName.toLowerCase();
+    }
+
     getInfo(){
         return `Title: ${this.#title}, Author: ${this.#author}, Year: ${this.#year}`;
     }
 }
 
-class Reader{
+
+class Reader {
     #name;
     #borrowedBooks;
+
     constructor(name){
         this.name = name;
         this.#borrowedBooks = [];
     }
+
     get name(){
         return this.#name;
     }
     set name(val){
         if(val === ""){
-            console.log("Is empty");
+            console.log("Name is empty");
             return;
         }
-         this.#name = val;
+        this.#name = val;
     }
-    get borrowBook(){
+
+    get borrowedBooks(){
         return this.#borrowedBooks;
     }
-    get borrowBookCount(){
+
+    get borrowedBooksCount(){
         return this.#borrowedBooks.length;
     }
-    takeBook(book) {
-        if (!book.isAvailable) {
-          return `${book.title} is not available`; 
+
+    takeBook(book){
+        if(!book.isAvailable){
+            return `${book.title} is not available`;
         }
         this.#borrowedBooks.push(book);
-        book.borrowBook(); 
-       return `${this.#name} successfully borrowed "${book.title}"`;
+        book.borrowBook();
+        return `${this.#name} successfully borrowed "${book.title}"`;
     }
+
     giveBackBook(book){
-        const ind = this.#borrowedBooks.indexOf(book);
-        if(ind === -1){
-            return `${this.#name} didn't borrow "${book.title}"`;   
+        const index = this.#borrowedBooks.indexOf(book);
+        if(index === -1){
+            return `${this.#name} didn't borrow "${book.title}"`;
         }
-        this.#borrowedBooks.splice(ind,1);
+        this.#borrowedBooks.splice(index, 1);
         book.returnBook();
         return `${this.#name} successfully returned "${book.title}"`;
     }
+
     hasBook(book){
         return this.#borrowedBooks.some(b => b.title === book.title);
     }
+
     showBorrowedBooks(){
-        if(this.#borrowedBooks.length === 0){
-            return "NO books borrowed";
-        }
-        return this.#borrowedBooks.map(b => b.getInfo());
+        return this.#borrowedBooks.map(b => b.title);
     }
+
     getInfo(){
         return `${this.#name} has ${this.#borrowedBooks.length} borrowed books`;
     }
 }
 
-class Library{
+
+class Library {
     #name;
     #books;
     #readers;
+
     constructor(name){
         this.name = name;
         this.#books = [];
         this.#readers = [];
     }
+
     get name(){
         return this.#name;
     }
+
     set name(val){
         if(val === ""){
-            console.log("Is empty");
+            console.log("Library name is empty");
             return;
         }
-         this.#name = val;
+        this.#name = val;
     }
+
     get books(){
         return this.#books;
     }
+
     get readers(){
         return this.#readers;
     }
+
     addBook(book){
-       this.#books.push(book);
+        this.#books.push(book);
     }
+
     registerReader(reader){
-       this.#readers.push(reader);
+        this.#readers.push(reader);
     }
+
     findBookByTitle(title){
-        const book = this.#books.find(t => t.title === title);
-        return book || null;
+        return this.#books.find(b => b.title === title) || null;
     }
-    findBookByAuthor(authorName){
-        return this.#books.filter(a => a.author === authorName);
+
+    findBooksByAuthor(authorName){
+        return this.#books.filter(b => b.matchesAuthor(authorName));
     }
-    giveBookToReader(book,reader){
+
+    giveBookToReader(title, reader){
         if(!this.#readers.includes(reader)){
             return "Reader isn't registered";
         }
-        if(!this.#books.includes(book)){
-            return "Book not in library";
-        }
+        const book = this.findBookByTitle(title);
+        if(!book) return "Book not in library";
         return reader.takeBook(book);
     }
-    acceptBookFromReader(title,reader){
+
+    acceptBookFromReader(title, reader){
         if(!this.#readers.includes(reader)){
             return "Reader isn't registered";
         }
-        const book = reader.borrowBook.find(book => book.title === title);
+        const book = reader.borrowedBooks.find(b => b.title === title);
         if(!book) return `${reader.name} didn't borrow "${title}"`;
         return reader.giveBackBook(book);
     }
+
     showAvailableBooks(){
-        return this.#books.filter(book => book.isAvailable);
+        return this.#books.filter(b => b.isAvailable);
     }
+
     showAllBooks(){
-        return this.#books.map(book => book.getInfo());
+        return this.#books;
     }
+
     getLibraryInfo(){
-        return `Central Library: ${this.#books.length} books, ${this.#readers.length} readers`;
+        return `${this.#name}: ${this.#books.length} books, ${this.#readers.length} readers`;
     }
 }
 
@@ -214,30 +241,18 @@ console.log("=== Find by title ===");
 console.log(library.findBookByTitle("1984"));
 
 console.log("=== Find by author ===");
-console.log(library.findBookByAuthor("George Orwell"));
+console.log(library.findBooksByAuthor("George Orwell"));
 
 console.log("=== Available books ===");
 console.log(library.showAvailableBooks());
 
 console.log("=== Give book to reader ===");
-library.giveBookToReader("The Hobbit", reader1);
+console.log(library.giveBookToReader("The Hobbit", reader1));
 console.log(reader1.showBorrowedBooks());
-console.log(book1.getInfo());
-
-console.log("=== Give another book to reader ===");
-library.giveBookToReader("Harry Potter", reader1);
-console.log(reader1.getInfo());
-
-console.log("=== Try to borrow same book again ===");
-library.giveBookToReader("The Hobbit", reader2);
 
 console.log("=== Return book ===");
-library.acceptBookFromReader("The Hobbit", reader1);
+console.log(library.acceptBookFromReader("The Hobbit", reader1));
 console.log(reader1.showBorrowedBooks());
-console.log(book1.getInfo());
-
-console.log("=== Final available books ===");
-console.log(library.showAvailableBooks());
 
 console.log("=== Final library info ===");
 console.log(library.getLibraryInfo());
