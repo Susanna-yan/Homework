@@ -31,9 +31,9 @@ class Dog extends Animal{
 }
 
 class Cat extends Animal{
-    constructor(name,age,breed){
+    constructor(name,age,color){
         super(name,age);
-        this.breed = breed;
+        this.color = color;
     }
     makeSound(){
         return "Meow!"
